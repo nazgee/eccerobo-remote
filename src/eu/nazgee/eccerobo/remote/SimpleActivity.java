@@ -116,11 +116,6 @@ public class SimpleActivity extends SimpleMjpegActivity {
 
 		final Scene pScene = new Scene();
 		pScene.getBackground().setColor(Color.TRANSPARENT);
-//		pScene.setBackground(new Background(Color.TRANSPARENT));
-
-		/* Create the face and add it to the scene. */
-		final Sprite face = new Sprite(0, 0, this.mFaceTextureRegion, this.getVertexBufferObjectManager());
-		pScene.attachChild(face);
 
 		final AnalogOnScreenControlRect analogOnScreenControl = new AnalogOnScreenControlRect(0, 0, this.mCamera, this.mOnScreenControlBaseTextureRegion, this.mOnScreenControlKnobTextureRegion, 0.2f, 200, this.getVertexBufferObjectManager(), new IAnalogOnScreenControlListener() {
 			@Override
@@ -139,14 +134,14 @@ public class SimpleActivity extends SimpleMjpegActivity {
 		});
 
 		final Sprite controlBase = analogOnScreenControl.getControlBase();
-		controlBase.setAlpha(0.3f);
+		controlBase.setAlpha(0.5f);
 		controlBase.setOffsetCenter(0, 0);
 		controlBase.setScale(1);
 		/* Calculate the coordinates for the face, so its centered on the camera. */
 		final float centerX = (SimpleActivity.CAMERA_WIDTH - controlBase.getWidth()) / 2;
 //		final float centerY = (SimpleActivity.CAMERA_HEIGHT - controlBase.getHeight()) / 2; // CENTER
 //		final float centerY = (SimpleActivity.CAMERA_HEIGHT - controlBase.getHeight()) / 1; // TOP
-		final float centerY = (0) / 1; // BOTTOM
+		final float centerY = 0; // BOTTOM
 		analogOnScreenControl.setPosition(centerX, centerY);
 
 		analogOnScreenControl.getControlKnob().setScale(1.25f);
@@ -165,7 +160,7 @@ public class SimpleActivity extends SimpleMjpegActivity {
 			case DIALOG_ENTER_ROBOT_IP_ID:
 				SharedPreferences settings = getPreferences(0);
 				final EditText ipEditText = new EditText(this);
-				ipEditText.setText(settings.getString("defaultServer", "192.168.1.17"));
+				ipEditText.setText(settings.getString("defaultServer", "nazgee.dyndns.org"));
 				return new AlertDialog.Builder(this)
 				.setIcon(android.R.drawable.ic_dialog_info)
 				.setTitle("Enter Oskar's IP address")
