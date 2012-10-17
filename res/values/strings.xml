@@ -3,5 +3,7 @@
 
     <string name="hello">Hello World, SimpleActivity!</string>
     <string name="app_name">Simple</string>
+    <string name="SOCKET_CONNECTING_DIALOG_TITLE">Connecting</string>
+    <string name="SOCKET_CONNECTING_DIALOG_TEXT">Attempting to connect with Oskar</string>
 
 </resources>
