@@ -2,6 +2,8 @@ package eu.nazgee.eccerobo.remote.mjpeg;
 
 import java.io.IOException;
 
+import eu.nazgee.eccerobo.remote.mjpeg.SimpleMjpegActivity.DoRead;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -27,10 +29,11 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     public final static int SIZE_STANDARD   = 1; 
     public final static int SIZE_BEST_FIT   = 4;
     public final static int SIZE_FULLSCREEN = 8;
+    public final static int SIZE_BEST_FIT_TOP = 16;
 
     private MjpegViewThread thread;
     private MjpegInputStream mIn = null;    
-    private boolean showFps = false;
+    private boolean showFps = true;
     private boolean mRun = false;
     private boolean surfaceDone = false;    
     private Paint overlayPaint;
@@ -69,6 +72,18 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                 }
                 tempx = (dispWidth / 2) - (bmw / 2);
                 tempy = (dispHeight / 2) - (bmh / 2);
+                return new Rect(tempx, tempy, bmw + tempx, bmh + tempy);
+            }
+            if (displayMode == MjpegView.SIZE_BEST_FIT_TOP) {
+                float bmasp = (float) bmw / (float) bmh;
+                bmw = dispWidth;
+                bmh = (int) (dispWidth / bmasp);
+                if (bmh > dispHeight) {
+                    bmh = dispHeight;
+                    bmw = (int) (dispHeight * bmasp);
+                }
+                tempx = (dispWidth / 2) - (bmw / 2);
+                tempy = 0;
                 return new Rect(tempx, tempy, bmw + tempx, bmh + tempy);
             }
             if (displayMode == MjpegView.SIZE_FULLSCREEN){
@@ -112,12 +127,23 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                 if(surfaceDone) {
                     try {
                         c = mSurfaceHolder.lockCanvas();
+                        if (c == null) {
+                        	Log.e(TAG, "no canvas?");
+                        	continue;
+                        }
                         synchronized (mSurfaceHolder) {
                             try {
                                 bm = mIn.readMjpegFrame();
                                 destRect = destRect(bm.getWidth(),bm.getHeight());
-                                c.drawColor(Color.BLACK);
+//                                destRect = destRect(200,200);
+                                
+//                                if (frameCounter % 2 == 0)
+//                                	c.drawColor(Color.RED);
+//                                else
+//                                	c.drawColor(Color.BLUE);
+                                
                                 c.drawBitmap(bm, null, destRect, p);
+                                Log.d(TAG, "new frame drawn WxH=" + bm.getWidth() +"x"+ bm.getHeight());
                                 if(showFps) {
                                     p.setXfermode(mode);
                                     if(ovl != null) {
