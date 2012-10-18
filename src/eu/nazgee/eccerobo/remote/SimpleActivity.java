@@ -77,7 +77,6 @@ public class SimpleActivity extends SimpleMjpegActivity {
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
-		this.showDialog(DIALOG_ENTER_ROBOT_IP_ID);
 		
 		mCamera = new Camera(0, 0, SimpleActivity.CAMERA_WIDTH, SimpleActivity.CAMERA_HEIGHT);
 //		return new EngineOptions(true, ScreenOrientation.PORTRAIT_FIXED, new RatioResolutionPolicy(SimpleActivity.CAMERA_WIDTH, SimpleActivity.CAMERA_HEIGHT), mCamera);
@@ -149,6 +148,24 @@ public class SimpleActivity extends SimpleMjpegActivity {
 		pScene.setChildScene(analogOnScreenControl);
 	
 		return pScene;
+	}
+
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		this.showDialog(DIALOG_ENTER_ROBOT_IP_ID);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		try {
+			mSocket.close();
+			mSocket = null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// ===========================================================

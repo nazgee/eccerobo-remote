@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.InputFilter.LengthFilter;
 import android.util.Log;
 
 public class MjpegInputStream extends DataInputStream {
@@ -71,6 +72,7 @@ public class MjpegInputStream extends DataInputStream {
         byte[] frameData = new byte[mContentLength];
         skipBytes(headerLen);
         readFully(frameData);
+
         return BitmapFactory.decodeStream(new ByteArrayInputStream(frameData));
     }
 }

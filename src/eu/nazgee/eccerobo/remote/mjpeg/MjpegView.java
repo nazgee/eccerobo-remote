@@ -50,7 +50,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         private long start;
         private Bitmap ovl;
 
-        public MjpegViewThread(SurfaceHolder surfaceHolder, Context context) {
+        public MjpegViewThread(SurfaceHolder surfaceHolder) {
             mSurfaceHolder = surfaceHolder;
         }
 
@@ -143,7 +143,6 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
 //                                	c.drawColor(Color.BLUE);
                                 
                                 c.drawBitmap(bm, null, destRect, p);
-                                Log.d(TAG, "new frame drawn WxH=" + bm.getWidth() +"x"+ bm.getHeight());
                                 if(showFps) {
                                     p.setXfermode(mode);
                                     if(ovl != null) {
@@ -163,6 +162,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                             } catch (IOException e) {
                                 e.getStackTrace();
                                 Log.d(TAG, "catch IOException hit in run", e);
+                                return;
                             }
                         }
                     } finally { 
@@ -175,10 +175,10 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    private void init(Context context) {
+    private void init() {
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
-        thread = new MjpegViewThread(holder, context);
+
         setFocusable(true);
         overlayPaint = new Paint();
         overlayPaint.setTextAlign(Paint.Align.LEFT);
@@ -192,12 +192,16 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         dispHeight = getHeight();
     }
 
-    public void startPlayback() { 
-        if(mIn != null) {
-            mRun = true;
-            thread.start();         
-        }
-    }
+	public void startPlayback() {
+		if (mIn != null) {
+			if (!mRun) {
+				thread = new MjpegViewThread(getHolder());
+				thread.setSurfaceSize(getMeasuredWidth(), getMeasuredHeight());
+			}
+			mRun = true;
+			thread.start();
+		}
+	}
 
     public void stopPlayback() { 
         mRun = false;
@@ -205,21 +209,26 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         while(retry) {
             try {
                 thread.join();
+                mIn.close();
                 retry = false;
             } catch (InterruptedException e) {
                 e.getStackTrace();
                 Log.d(TAG, "catch IOException hit in stopPlayback", e);
-            }
+            } catch (IOException e) {
+				e.printStackTrace();
+			}
         }
     }
 
     public MjpegView(Context context, AttributeSet attrs) { 
-        super(context, attrs); init(context); 
+        super(context, attrs); init(); 
     }
 
-    public void surfaceChanged(SurfaceHolder holder, int f, int w, int h) { 
-        thread.setSurfaceSize(w, h); 
-    }
+	public void surfaceChanged(SurfaceHolder holder, int f, int w, int h) {
+		if (thread != null) {
+			thread.setSurfaceSize(w, h);
+		}
+	}
 
     public void surfaceDestroyed(SurfaceHolder holder) { 
         surfaceDone = false; 
@@ -228,7 +237,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
 
     public MjpegView(Context context) { 
         super(context);
-        init(context); 
+        init(); 
     }
 
     public void surfaceCreated(SurfaceHolder holder) { 

@@ -57,7 +57,6 @@ public abstract class BaseMjpegActivity extends BaseGameActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-//		finish();
 	}
 
 	public MjpegView getMjpegSurfaceView() {

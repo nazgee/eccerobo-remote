@@ -10,11 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
-import eu.nazgee.eccerobo.remote.mjpeg.MjpegActivity.DoRead;
 
 /**
  * (c) Zynga 2012
@@ -65,31 +61,18 @@ public abstract class SimpleMjpegActivity extends BaseMjpegActivity {
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 	}
 
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
-//        WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//    }
-
     @Override
 	protected void onResume() {
 		super.onResume();
-		//sample public cam
-		String URL = "http://trackfield.webcam.oregonstate.edu/axis-cgi/mjpg/video.cgi?resolution=800x600&amp%3bdummy=1333689998337";
-//		
-//		mv = new MjpegView(this);
-//		setContentView(mv);        
-		
-//		new DoRead().execute(URL);
 	}
 
 	public void onPause() {
-        super.onPause();
-//        getMjpegSurfaceView().stopPlayback();
-    }
+		super.onPause();
+
+		MjpegView mv = getMjpegSurfaceView();
+		if (mv != null)
+			mv.stopPlayback();
+	}
 
     public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
         protected MjpegInputStream doInBackground(String... url) {
