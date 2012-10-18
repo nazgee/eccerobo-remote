@@ -14,7 +14,6 @@ import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.opengl.texture.ITexture;
@@ -27,6 +26,7 @@ import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.call.Callable;
 import org.andengine.util.call.Callback;
+import org.andengine.util.math.MathUtils;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -120,8 +120,10 @@ public class SimpleActivity extends SimpleMjpegActivity {
 			@Override
 			public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float pValueY) {
 				if (mSSOut != null && mSocket != null) {
-					mSSOut.write("set speed " + Math.round(pValueY * 4.5) + "\r\n");
-					mSSOut.write("set turn " + Math.round(pValueX * 4.5) + "\r\n");
+					int speed = MathUtils.bringToBounds((int)Math.round(pValueY * 4.5), -4, 4);
+					int turn = MathUtils.bringToBounds((int)Math.round(pValueX * 4.5), -4, 4);
+					mSSOut.write("set speed " + speed + "\r\n");
+					mSSOut.write("set turn " + turn + "\r\n");
 					mSSOut.flush();
 				}
 			}
